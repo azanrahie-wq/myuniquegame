@@ -50,21 +50,25 @@ jobs:
         pip install --upgrade pip
         pip install cython==0.29.36 buildozer
 
-    - name: Create buildozer.spec
+    - name: Initialize and Fix Buildozer Spec
       run: |
         if [ ! -f buildozer.spec ]; then
           buildozer init
         fi
-        # requirements aur package settings theek karna
+        # Android API aur Build tools ko stable version par fix karna taake license ka masla na aaye
         sed -i 's/#requirements = python3,pygame/requirements = python3,pygame/' buildozer.spec
         sed -i 's/# title = My Application/title = My Unique Game/' buildozer.spec
         sed -i 's/# package.name = myapp/package.name = myuniquegame/' buildozer.spec
         sed -i 's/# package.domain = org.test/package.domain = org.game/' buildozer.spec
         sed -i 's/# source.include_exts = py,png,jpg,kv,atlas/source.include_exts = py,png,jpg/' buildozer.spec
+        sed -i 's/# android.api = 33/android.api = 31/' buildozer.spec
+        sed -i 's/# android.minapi = 21/android.minapi = 21/' buildozer.spec
 
-    - name: Build with Buildozer
+    - name: Accept Android Licenses and Build
       run: |
-        buildozer -v android debug
+        mkdir -p ~/.android
+        touch ~/.android/repositories.cfg
+        yes | buildozer -v android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
