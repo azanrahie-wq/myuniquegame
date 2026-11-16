@@ -35,29 +35,32 @@ jobs:
             libavcodec-dev \
             zlib1g-dev \
             libffi-dev \
-            libssl-dev
+            libssl-dev \
+            ant \
+            openjdk-17-jdk
+
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
 
     - name: Install Buildozer and Cython
       run: |
         pip install --upgrade pip
         pip install cython==0.29.36 buildozer
 
-    - name: Initialize Buildozer Spec
+    - name: Create buildozer.spec
       run: |
         if [ ! -f buildozer.spec ]; then
           buildozer init
-          sed -i 's/# title = My Application/title = My Unique Game/' buildozer.spec
-          sed -i 's/# package.name = myapp/package.name = myuniquegame/' buildozer.spec
-          sed -i 's/# package.domain = org.test/package.domain = org.game/' buildozer.spec
-          sed -i 's/# source.include_exts = py,png,jpg,kv,atlas/source.include_exts = py,png,jpg/' buildozer.spec
         fi
-
-    - name: Pre-accept Android SDK Licenses
-      run: |
-        mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
-        echo "24333f8a43b682427c076aef9e6b7d08596b316a" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-        echo "d56f5187479451eabf01fb78af6dfcb131a648fa" >> ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-        echo "84831b9409646a918e30573bab4c9c91346d8abd" >> ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+        # requirements aur package settings theek karna
+        sed -i 's/#requirements = python3,pygame/requirements = python3,pygame/' buildozer.spec
+        sed -i 's/# title = My Application/title = My Unique Game/' buildozer.spec
+        sed -i 's/# package.name = myapp/package.name = myuniquegame/' buildozer.spec
+        sed -i 's/# package.domain = org.test/package.domain = org.game/' buildozer.spec
+        sed -i 's/# source.include_exts = py,png,jpg,kv,atlas/source.include_exts = py,png,jpg/' buildozer.spec
 
     - name: Build with Buildozer
       run: |
